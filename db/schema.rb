@@ -10,10 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170811124552) do
+ActiveRecord::Schema.define(version: 20170811163416) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "activities", force: :cascade do |t|
+    t.integer "image_id"
+    t.string "title"
+    t.float "price"
+    t.integer "num_of_bookings"
+    t.string "address"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id"
+  end
+
+  create_table "calendar_dates", force: :cascade do |t|
+    t.datetime "date"
+    t.integer "activity_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "clients", force: :cascade do |t|
     t.integer "user_id"
@@ -52,6 +71,7 @@ ActiveRecord::Schema.define(version: 20170811124552) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
+    t.string "location"
   end
 
   create_table "tokens", force: :cascade do |t|
@@ -69,9 +89,9 @@ ActiveRecord::Schema.define(version: 20170811124552) do
     t.datetime "updated_at", null: false
     t.string "name"
     t.datetime "date_of_birth"
-    t.integer "gender_id"
     t.integer "image_id"
     t.string "user_type"
+    t.string "gender"
   end
 
 end

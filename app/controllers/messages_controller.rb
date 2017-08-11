@@ -2,7 +2,7 @@ class MessagesController < ApplicationController
   before_action :authorize, only: [:create, :show, :show_sent, :show_received, :mark_read]
   before_action :set_message, only: [:show, :mark_read]
 
-  # GET /messages/show/:id
+  # GET /messages/get/:id
   def show
     if @message.to == @user or @message.from == @user
       render json: @message
@@ -11,14 +11,14 @@ class MessagesController < ApplicationController
     end
   end
 
-  # GET /messages/show_sent
+  # GET /messages/get_sent
   def show_sent
-    render json: @user.sent_messages
+    render json: @user.sent_messages.limit(params[:limit]).offset(params[:offset])
   end
 
-  # GET /messages/show_received
+  # GET /messages/get_received
   def show_received
-    render json: @user.received_messages
+    render json: @user.received_messages.limit(params[:limit]).offset(params[:offset])
   end
 
   # POST /messages/mark_read/:id
@@ -65,9 +65,9 @@ class MessagesController < ApplicationController
   # end
 
   # DELETE /messages/1
-  def destroy
-    @message.destroy
-  end
+  # def destroy
+  #   @message.destroy
+  # end
 
   private
 

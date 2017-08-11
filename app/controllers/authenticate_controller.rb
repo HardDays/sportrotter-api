@@ -15,6 +15,12 @@ class AuthenticateController < ApplicationController
 			process_token(request, @user)
 			@token = Token.new(user_id: @user.id, info: @info, token: SecureRandom.hex + SecureRandom.hex)
 			@token.save
+
+			if @user.user_type == 'professional'
+				@user.location = IpGeocoder.geocode(request.remote_ip )
+				@user.save
+			end
+
 			render json: {token: @token.token} , status: :ok
 		else
 			render status: :unauthorized

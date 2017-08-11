@@ -1,5 +1,35 @@
 class UsersController < ApplicationController
   
+  # GET /users/get_all
+  def get_all
+    @users = User.all
+
+    render json: @users.limit(params[:limit]).offset(params[:offset]), except: :password
+  end
+
+  # GET /users/get_professionals
+  def get_professionals
+    @users = nil
+
+    filters = ['description', 'address']
+
+    if params[:address]
+        filters.push('address')
+        filters.push('location')
+        params[:location] = params[:address]
+    end
+
+    filters.each do |filter|
+      if @users == nil
+         @users = User.where("#{filter} ILIKE ?", "%#{params[filter]}%") if params[filter] != nil
+      else
+         @users = @users.or(User.where("#{filter} ILIKE ?", "%#{params[filter]}%")) if params[filter] != nil
+      end
+    end
+
+    render json: @users.limit(params[:limit]).offset(params[:offset]).collect{|e| e.user}, except: :password
+  end
+
   # GET /users/get_me
   def get_me
     @user = AuthorizeController.authorize(request)
@@ -12,7 +42,6 @@ class UsersController < ApplicationController
         if params[:user_type] == 'professional'
             @prof = Professional.new(professional_params)
             change_professional
-
             if @prof.save
                 render json: @user, except: :password
             else
@@ -21,7 +50,6 @@ class UsersController < ApplicationController
         else
             @client = Client.new
             change_client
-
             if @client.save
                 render json: @user, except: :password
             else
@@ -36,6 +64,14 @@ class UsersController < ApplicationController
   # PUT /users/update
   def update
     @user = AuthorizeController.authorize(request)
+
+    @user.image.delete
+
+    if params[:image]
+        image = Image.new(base64: params[:image])
+        @user.image = image
+    end
+
     if @user.update(user_update_params)
         if @user.user_type == 'professional'
             @prof = @user.professional
@@ -58,11 +94,11 @@ class UsersController < ApplicationController
 private
 
   def user_create_params
-    params.permit(:email, :password, :name, :date_of_birth, :user_type)
+    params.permit(:email, :password, :name, :date_of_birth, :user_type, :gender)
   end
 
   def user_update_params
-    params.permit(:email, :password, :name, :date_of_birth)
+    params.permit(:email, :password, :name, :date_of_birth, :gender)
   end
 
   def professional_params
@@ -72,10 +108,6 @@ private
   def create_user
     @user = User.new(user_create_params)
 
-    if params[:gender]
-        @user.gender = Gender.find_by(params[:gender])
-    end
-    
     if params[:image]
         image = Image.new(base64: params[:image])
         @user.image = image

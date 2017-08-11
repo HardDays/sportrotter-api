@@ -1,15 +1,18 @@
 class User < ApplicationRecord
-
+    
     validates :email, uniqueness: true, optional: false
 	validates :password, optional: false
 
-    belongs_to :gender, optional: true
+    validates_inclusion_of :gender, in: ['male', 'female', nil]
+    validates_inclusion_of :user_type, in: ['professional', 'client']
+
     belongs_to :image, optional: true
 
     has_one :client, dependent: :destroy
     has_one :professional, dependent: :destroy
 
     has_many :tokens, dependent: :destroy
+    has_many :activities, dependent: :destroy
 
     has_many :sent_messages, foreign_key: "from_id", class_name: "Message"
     has_many :received_messages, foreign_key: "to_id", class_name: "Message"
