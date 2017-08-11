@@ -11,6 +11,9 @@ class User < ApplicationRecord
 
     has_many :tokens, dependent: :destroy
 
+    has_many :sent_messages, foreign_key: "from_id", class_name: "Message"
+    has_many :received_messages, foreign_key: "to_id", class_name: "Message"
+
     before_create do
 		self.password = Digest::SHA256.hexdigest(self.password)
 	end
@@ -21,16 +24,12 @@ class User < ApplicationRecord
 
     def serializable_hash options=nil
 		attrs = {}
-		if professional != nil
-            attrs[:user_type] = :professional
-            #attrs[:professional] = professional
+		if user_type == 'professional'
 			attrs[:background_id] = professional.background_id
             attrs[:diploma_id] = professional.diploma_id
             attrs[:address] = professional.address
             attrs[:phone] = professional.phone
             attrs[:description] = professional.description
-        else
-            attrs[:user_type] = :client
   		end
   		super.merge(attrs)
 	end
