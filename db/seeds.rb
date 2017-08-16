@@ -5,3 +5,13 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+@user = User.new(email: :admin, password: :admin, user_type: :professional)
+if !@user.save
+    puts json: @user.errors
+end
+@prof = Professional.new()
+@prof.user = @user
+if !@prof.save
+    puts json: @prof.errors
+end

@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  activity_id: 1
+  date: 2017-08-16 19:03:01
+  num_of_participants: 1
+  is_validated: false
+
+two:
+  activity_id: 1
+  date: 2017-08-16 19:03:01
+  num_of_participants: 1
+  is_validated: false

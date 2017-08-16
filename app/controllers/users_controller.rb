@@ -1,5 +1,12 @@
 class UsersController < ApplicationController
   
+  # GET /users/get
+  def get
+    @user = User.find(param[:id])
+
+    render json: @user
+  end
+
   # GET /users/get_all
   def get_all
     @users = User.all
@@ -11,19 +18,20 @@ class UsersController < ApplicationController
   def get_professionals
     @users = nil
 
-    filters = ['description', 'address']
+    filters = ['description']
 
     if params[:address]
         filters.push('address')
         filters.push('location')
         params[:location] = params[:address]
     end
-
+    #refactor and change
     filters.each do |filter|
+      param = "#{filter} ILIKE ?", "%#{params[filter]}%"
       if @users == nil
-         @users = User.where("#{filter} ILIKE ?", "%#{params[filter]}%") if params[filter] != nil
+         @users = User.where(param) if params[filter] != nil
       else
-         @users = @users.or(User.where("#{filter} ILIKE ?", "%#{params[filter]}%")) if params[filter] != nil
+         @users = @users.or(User.where(param)) if params[filter] != nil
       end
     end
 
@@ -102,7 +110,7 @@ private
   end
 
   def professional_params
-    params.require(:professional).permit(:address, :phone, :description)
+    params.permit(:address, :phone, :description)
   end
 
   def create_user

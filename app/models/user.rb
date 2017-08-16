@@ -16,6 +16,7 @@ class User < ApplicationRecord
 
     has_many :sent_messages, foreign_key: "from_id", class_name: "Message"
     has_many :received_messages, foreign_key: "to_id", class_name: "Message"
+    has_many :bookings
 
     before_create do
 		self.password = Digest::SHA256.hexdigest(self.password)

@@ -1,3 +1,7 @@
+require 'digest'
+require 'securerandom'
+require 'geokit-rails'
+
 class AuthenticateController < ApplicationController
     def process_token(request, user)
 		@info = Digest::SHA256.hexdigest(request.ip + request.user_agent + 'kek salt')
@@ -17,7 +21,7 @@ class AuthenticateController < ApplicationController
 			@token.save
 
 			if @user.user_type == 'professional'
-				@user.location = IpGeocoder.geocode(request.remote_ip )
+				@user.professional.location = Geokit::Geocoders::IpGeocoder.geocode(request.remote_ip )
 				@user.save
 			end
 
