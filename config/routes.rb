@@ -33,4 +33,8 @@ Rails.application.routes.draw do
   put 'bookings/update/:id', action: :update, controller: 'bookings'
   delete 'bookings/delete/:id', action: :delete, controller: 'bookings'
 
+  #Images routes
+  get 'images/get/:id', action: :show, controller: 'images'
+
+
 end
