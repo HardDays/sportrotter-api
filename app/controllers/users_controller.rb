@@ -81,7 +81,7 @@ class UsersController < ApplicationController
     end
 
     if params[:password]
-        @user.:password = User.get_hash(params[:password])
+        @user.password = User.get_hash(params[:password])
     end
 
     if @user.update(user_update_params)
