@@ -8,7 +8,7 @@ class CommentsController < ApplicationController
   def index
     @comments = Comment.all
 
-    render json: @comments
+    render json: @comments.limit(params[:limit]).offset(params[:offset])
   end
 
   # GET /comments/1

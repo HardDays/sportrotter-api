@@ -10,7 +10,7 @@ class BookingsController < ApplicationController
   def index
     @bookings = Booking.all
 
-    render json: @bookings
+    render json: @bookings.limit(params[:limit]).offset(params[:offset])
   end
 
   # GET /bookings/1
@@ -20,12 +20,12 @@ class BookingsController < ApplicationController
 
   # GET /bookings/get_activity_bookings/:id
   def get_activity_bookings
-    render json: @activity.bookings
+    render json: @activity.bookings.limit(params[:limit]).offset(params[:offset])
   end
 
   # GET /bookings/get_my_bookings
   def get_my_bookings
-    render json: @user.bookings
+    render json: @user.bookings.limit(params[:limit]).offset(params[:offset])
   end
 
   # POST /bookings/validate_booking

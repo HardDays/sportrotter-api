@@ -20,10 +20,10 @@ class AuthenticateController < ApplicationController
 			@token = Token.new(user_id: @user.id, info: @info, token: SecureRandom.hex + SecureRandom.hex)
 			@token.save
 				
-			if @user.user_type == 'professional'
-				@user.professional.location = Geokit::Geocoders::IpGeocoder.geocode(request.remote_ip )
-				@user.save
-			end
+			#if @user.user_type == 'professional'
+				#@user.professional.location = Geokit::Geocoders::IpGeocoder.geocode(request.remote_ip )
+			#	@user.save
+			#end
 
 			render json: {token: @token.token} , status: :ok
 		else
