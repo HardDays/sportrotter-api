@@ -19,7 +19,8 @@ class ActivitiesController < ApplicationController
     end
 
     if params[:dates] != nil
-      @activities = @activities.joins(:calendar_dates).where("calendar_dates.date = '#{DateTime.parse(params[:dates])}'")
+      dates = params[:dates].collect{|d| DateTime.parse(d)}
+      @activities = @activities.joins(:calendar_dates).where("calendar_dates.date IN (?)", dates)
     end
 
     render json: @activities.limit(params[:limit]).offset(params[:offset])
