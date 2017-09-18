@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get 'users/get_professionals', action: :get_professionals, controller: 'users'
   get 'users/get_me', action: :get_me, controller: 'users'
   post 'users/create', action: :create, controller: 'users'
+  post 'users/change_password', action: :change_password, controller: 'users'
   put 'users/update', action: :update, controller: 'users'
 
   # auth routes
@@ -22,6 +23,8 @@ Rails.application.routes.draw do
   get 'activities/get_all', action: :index, controller: 'activities'
   get 'activities/get/:id', action: :show, controller: 'activities'
   post 'activities/create', action: :create, controller: 'activities'
+  post 'activities/rate', action: :rate, controller: 'activities'
+  post 'activities/unrate', action: :unrate, controller: 'activities'
   put 'activities/update/:id', action: :update, controller: 'activities'
   delete 'activities/delete/:id', action: :delete, controller: 'activities'
 
@@ -33,8 +36,13 @@ Rails.application.routes.draw do
   put 'bookings/update/:id', action: :update, controller: 'bookings'
   delete 'bookings/delete/:id', action: :delete, controller: 'bookings'
 
-  #Images routes
+  # images routes
   get 'images/get/:id', action: :show, controller: 'images'
 
+  # comments routes
+  get 'comments/get_all', action: :index, controller: 'comments'
+  get 'comments/get/:id', action: :show, controller: 'comments'
+  post 'comments/create', action: :create, controller: 'comments'
+  delete 'comments/delete/:id', action: :delete, controller: 'comments'
 
 end

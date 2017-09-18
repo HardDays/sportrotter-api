@@ -18,6 +18,7 @@ class User < ApplicationRecord
     has_many :received_messages, foreign_key: "to_id", class_name: "Message"
     has_many :bookings
 
+    has_many :rates, dependent: :destroy
 
     def self.get_hash(password) 
         return Digest::SHA256.hexdigest(password)

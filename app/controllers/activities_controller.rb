@@ -2,6 +2,8 @@ class ActivitiesController < ApplicationController
   before_action :set_activity, only: [:show]
   before_action :authorize, only: [:create]
   before_action :check_author, only: [:update, :delete]
+  before_action :check_rate, only: [:rate]
+  before_action :check_unrate, only: [:unrate]
 
 
   # GET /activities/get_all
@@ -29,6 +31,29 @@ class ActivitiesController < ApplicationController
   # GET /activities/get/:id
   def show
     render json: @activity
+  end
+
+  # POST /activities/rate
+  def rate
+    @rate = Rate.new(rate_params)
+    @rate.user = @user
+    if @rate.save
+      render json: @rate, status: :created
+    else
+      render json: @rate.errors, status: :unprocessable_entity
+    end
+
+  end
+
+  # POST /activities/unrate
+  def unrate
+    @rate = Rate.find_by(user_id: @user.id, activity_id: params[:activity_id])
+    if @rate
+      @rate.destroy
+      render json: {success: true}, status: :ok
+    else
+      render status: :unprocessable_entity
+    end
   end
 
   # POST /activities/create
@@ -86,6 +111,7 @@ class ActivitiesController < ApplicationController
   # DELETE /activities/delete/:id
   def delete
     @activity.destroy
+    render json: {success: true}, status: :ok
   end
 
   private
@@ -97,20 +123,47 @@ class ActivitiesController < ApplicationController
     def authorize
       @user = AuthorizeController.authorize(request)
       if @user == nil or @user.user_type == 'client'
-        render status: :unauthorized 
+        render status: :forbidden 
       end
     end
+
+    def check_rate
+      @user = AuthorizeController.authorize(request)
+      if @user == nil
+        render status: :forbidden 
+      else
+        @activity = Activity.find(params[:activity_id])
+        booking = @user.bookings.find{|b| b.activity_id == params[:activity_id]}
+        has_rate = @activity.rates.find{|r| r.activity_id == params[:activity_id] and r.user_id == @user.id}
+        if booking == nil or booking.date > Time.now or has_rate
+          render json: {"error": "cannot rate this booking"}, status: :unprocessable_entity
+        end
+      end
+    end
+
+    def check_unrate
+      @user = AuthorizeController.authorize(request)
+      if @user == nil
+        render status: :forbidden         
+      end
+    end
+
 
     def check_author
       set_activity
       @user = AuthorizeController.authorize(request)
       if @user == nil or @user.user_type == 'client' or @user != @activity.user
-        render status: :unauthorized 
+        render status: :forbidden 
       end
     end
 
     # Only allow a trusted parameter "white list" through.
     def activity_params
       params.permit(:title, :price, :num_of_bookings, :address, :description)
+    end
+
+    # Only allow a trusted parameter "white list" through.
+    def rate_params
+      params.permit(:activity_id, :rate)
     end
 end

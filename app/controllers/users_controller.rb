@@ -69,9 +69,51 @@ class UsersController < ApplicationController
     end
   end
 
+ def change_password
+    @user = AuthorizeController.authorize(request)
+    
+    if not params[:old_password] or User.get_hash(params[:old_password]) != @user.password
+      render status: :forbidden and return
+    end
+
+    @password = params[:new_password]
+    if @password != nil
+     @password = User.get_hash(@password)
+    else
+      render status: :unprocessable_entity and return
+    end
+    #update user
+    @user.password = @password
+    if @user.save
+      render json: @user, except: :password
+    else
+      render json: @user.errors, status: :unprocessable_entity and return
+    end
+
+  end
+
   # PUT /users/update
   def update
     @user = AuthorizeController.authorize(request)
+
+    if @user == nil
+      render status: :forbidden and return
+    end
+
+    @password = params[:new_password]
+    if @password != nil
+     @password = User.encrypt_password(@password)
+    end
+    #update user
+    @user.password = @password
+    if @user.save
+      render json: @user, except: :password
+    else
+      render json: @user.errors, status: :unprocessable_entity and return
+    end
+
+  end
+    end
 
     @user.image.delete
 

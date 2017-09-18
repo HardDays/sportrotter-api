@@ -40,7 +40,7 @@ class BookingsController < ApplicationController
     @booking = Booking.new(booking_params)
     @booking.user = @user
     @booking.is_validated = false
-    @booking.date = Date.new(params[:date]) if params[:date]
+    @booking.date = DateTime.parse(params[:date]) if params[:date]
     if @booking.save
       render json: @booking, status: :created
     else
@@ -63,6 +63,7 @@ class BookingsController < ApplicationController
   # DELETE /bookings/1
   def delete
     @booking.destroy
+    render json: {success: true}, status: :ok
   end
 
   private
@@ -74,7 +75,7 @@ class BookingsController < ApplicationController
     def authorize
       @user = AuthorizeController.authorize(request)
       if @user == nil
-        render status: :unauthorized 
+        render status: :forbidden 
       end
     end
 
@@ -82,7 +83,7 @@ class BookingsController < ApplicationController
       set_booking
       @user = AuthorizeController.authorize(request)
       if @user == nil or @user != @booking.user
-        render status: :unauthorized 
+        render status: :forbidden 
       end
     end
 
@@ -90,16 +91,19 @@ class BookingsController < ApplicationController
       @activity = Activity.find(params[:id])
       @user = AuthorizeController.authorize(request)
       if @user == nil or @user != @activity.user
-        render status: :unauthorized 
+        render status: :forbidden 
       end
     end
 
     def check_activity_num
       @activity = Activity.find(params[:activity_id])
-      date = Date.new(params[:date])
+      date = DateTime.parse(params[:date])
       @bookings = Booking.where(activity_id: params[:activity_id], date: date.all_day)
+      if @activity.calendar_dates.find{|c| c.date == date} == nil
+        render json: {error: "no such date for booking"}, status: :unprocessable_entity and return
+      end
       if @bookings.sum{|b| b.num_of_participants} >= @activity.num_of_bookings
-        render json: {error: "Number of possible booking at this day out!"}, status: :unprocessable_entity
+        render json: {error: "number of bookings reached"}, status: :unprocessable_entity
       end
     end
 
