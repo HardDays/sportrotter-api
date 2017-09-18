@@ -7,6 +7,11 @@ class CommentsController < ApplicationController
   # GET /comments
   def index
     @comments = Comment.all
+   
+    filters = ['user_id', 'activity_id']
+    filters.each do |filter|
+      @comments = @comments.where(filter => params[filter]) if params[filter] != nil
+    end
 
     render json: @comments.limit(params[:limit]).offset(params[:offset])
   end
