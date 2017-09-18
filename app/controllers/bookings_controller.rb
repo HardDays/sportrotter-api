@@ -98,7 +98,7 @@ class BookingsController < ApplicationController
       @activity = Activity.find(params[:activity_id])
       date = Date.new(params[:date])
       @bookings = Booking.where(activity_id: params[:activity_id], date: date.all_day)
-      if @bookings.count >= @activity.num_of_bookings
+      if @bookings.sum{|b| b.num_of_participants} >= @activity.num_of_bookings
         render json: {error: "Number of possible booking at this day out!"}, status: :unprocessable_entity
       end
     end

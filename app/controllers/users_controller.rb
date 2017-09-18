@@ -80,6 +80,10 @@ class UsersController < ApplicationController
         @user.image = image
     end
 
+    if params[:password]
+        @user.:password = User.get_hash(params[:password])
+    end
+
     if @user.update(user_update_params)
         if @user.user_type == 'professional'
             @prof = @user.professional

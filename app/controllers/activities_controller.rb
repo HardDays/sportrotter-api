@@ -18,6 +18,10 @@ class ActivitiesController < ApplicationController
       @activities = @activities.where("#{filter} ILIKE ?", "%#{params[filter]}%") if params[filter] != nil
     end
 
+    if params[:dates] != nil
+      @activities = @activities.indcludes(:calendar_dates).where("calendar_date.date = #{params[:dates]}")
+    end
+
     render json: @activities.limit(params[:limit]).offset(params[:offset])
   end
 

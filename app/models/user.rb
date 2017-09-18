@@ -18,13 +18,18 @@ class User < ApplicationRecord
     has_many :received_messages, foreign_key: "to_id", class_name: "Message"
     has_many :bookings
 
+
+    def self.get_hash(password) 
+        return Digest::SHA256.hexdigest(password)
+    end
+
     before_create do
-		self.password = Digest::SHA256.hexdigest(self.password)
+		self.password = User.get_hash(self.password)
 	end
 
-	before_update do
-		self.password = Digest::SHA256.hexdigest(self.password)
-	end
+	#before_update do
+		#self.password = Digest::SHA256.hexdigest(self.password)
+	#end
 
     def serializable_hash options=nil
 		attrs = {}

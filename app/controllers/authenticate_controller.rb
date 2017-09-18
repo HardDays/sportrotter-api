@@ -13,7 +13,7 @@ class AuthenticateController < ApplicationController
 
     # POST /auth/login
 	def login
-		@password = Digest::SHA256.hexdigest(params[:password])
+		@password = User.get_hash(params[:password])
 		@user = User.find_by email: params[:email], password: @password
 		if @user != nil
 			process_token(request, @user)
