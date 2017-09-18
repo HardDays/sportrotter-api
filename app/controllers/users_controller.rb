@@ -87,7 +87,7 @@ class UsersController < ApplicationController
     if @user.save
       render json: @user, except: :password
     else
-      render json: @user.errors, status: :unprocessable_entity and return
+      render json: @user.errors, status: :unprocessable_entity
     end
 
   end
@@ -110,9 +110,6 @@ class UsersController < ApplicationController
       render json: @user, except: :password
     else
       render json: @user.errors, status: :unprocessable_entity and return
-    end
-
-  end
     end
 
     @user.image.delete
