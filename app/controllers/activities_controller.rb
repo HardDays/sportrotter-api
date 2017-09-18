@@ -19,7 +19,7 @@ class ActivitiesController < ApplicationController
     end
 
     if params[:dates] != nil
-      @activities = @activities.indcludes(:calendar_dates).where("calendar_date.date = #{params[:dates]}")
+      @activities = @activities.joins(:calendar_dates).where("calendar_dates.date = '#{DateTime.parse(params[:dates])}'")
     end
 
     render json: @activities.limit(params[:limit]).offset(params[:offset])
@@ -43,7 +43,7 @@ class ActivitiesController < ApplicationController
     if @activity.save
       if params[:calendar]
         params[:calendar].each do |date|
-          calendar_date = CalendarDate.new(date: Date.new(date), activity: @activity)
+          calendar_date = CalendarDate.new(date: DateTime.parse(date), activity: @activity)
           calendar_date.save
         end
       end
@@ -70,7 +70,7 @@ class ActivitiesController < ApplicationController
 
       if params[:calendar]
         params[:calendar].each do |date|
-          calendar_date = CalendarDate.new(date: Date.new(date), activity: @activity)
+          calendar_date = CalendarDate.new(date: DateTime.parse(date), activity: @activity)
           calendar_date.save
         end
       end
