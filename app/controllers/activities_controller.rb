@@ -29,10 +29,10 @@ class ActivitiesController < ApplicationController
     @user = AuthorizeController.authorize(request)
     output = []
     @activities.each do |act|
-      if (@user and can_view_address(act)) or @user.id == @activity.user_id
-        output.push(act.attributes)
+      if @user and (can_view_address(act) or @user.id == act.user_id)
+        output.push(act.as_json)
       else
-        output.push(act.attributes.except('detailed_address'))
+        output.push(act.as_json(except: 'detailed_address'))
       end
     end
 
@@ -42,7 +42,7 @@ class ActivitiesController < ApplicationController
   # GET /activities/get/:id
   def show
     @user = AuthorizeController.authorize(request)
-    if (@user and can_view_address(@activity)) or @user.id == @activity.user_id
+    if @user and (can_view_address(@activity) or @user.id == @activity.user_id)
       render json: @activity
     else
       render json: @activity, except: :detailed_address
