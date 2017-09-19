@@ -24,13 +24,29 @@ class ActivitiesController < ApplicationController
       dates = params[:dates].collect{|d| DateTime.parse(d)}
       @activities = @activities.joins(:calendar_dates).where("calendar_dates.date IN (?)", dates)
     end
+    @activities = @activities.limit(params[:limit]).offset(params[:offset])
 
-    render json: @activities.limit(params[:limit]).offset(params[:offset])
+    @user = AuthorizeController.authorize(request)
+    output = []
+    @activities.each do |act|
+      if @user and can_view_address(act)
+        output.push(act.attributes)
+      else
+        output.push(act.attributes.except('detailed_address'))
+      end
+    end
+
+    render json: output
   end
 
   # GET /activities/get/:id
   def show
-    render json: @activity
+    @user = AuthorizeController.authorize(request)
+    if @user and can_view_address(@activity)
+      render json: @activity
+    else
+      render json: @activity, except: :detailed_address
+    end
   end
 
   # POST /activities/rate
@@ -127,13 +143,21 @@ class ActivitiesController < ApplicationController
       end
     end
 
+    def find_user_booking(activity)
+       return @user.bookings.find{|b| b.activity_id == activity.id}
+    end
+
+    def can_view_address(activity)
+      return find_user_booking(activity) != nil
+    end
+
     def check_rate
       @user = AuthorizeController.authorize(request)
       if @user == nil
         render status: :forbidden 
       else
         @activity = Activity.find(params[:activity_id])
-        booking = @user.bookings.find{|b| b.activity_id == params[:activity_id]}
+        booking = find_user_booking(@activity)
         has_rate = @activity.rates.find{|r| r.activity_id == params[:activity_id] and r.user_id == @user.id}
         if booking == nil or booking.date > Time.now or has_rate
           render json: {"error": "cannot rate this booking"}, status: :unprocessable_entity
@@ -159,7 +183,7 @@ class ActivitiesController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def activity_params
-      params.permit(:title, :price, :num_of_bookings, :address, :description)
+      params.permit(:title, :price, :num_of_bookings, :address, :detailed_address, :description)
     end
 
     # Only allow a trusted parameter "white list" through.

@@ -1,8 +1,8 @@
 class BookingsController < ApplicationController
   # before_action :set_booking, only: [:show, :update, :destroy]
-  before_action :authorize, only: [:show, :index, :create, :get_my_bookings]
+  before_action :authorize, only: [:show, :index, :create, :get_my_bookings, :get_future_bookings, :get_past_bookings]
   before_action :authorize_self, only: [:update, :delete]
-  before_action :authorize_act, only: [:get_activity_bookings, :validate_booking]
+  before_action :authorize_act, only: [:validate_booking]
   before_action :check_activity_num, only: [:create, :update]
 
 
@@ -26,6 +26,16 @@ class BookingsController < ApplicationController
   # GET /bookings/get_my_bookings
   def get_my_bookings
     render json: @user.bookings.limit(params[:limit]).offset(params[:offset])
+  end
+
+  # GET /bookings/get_future_bookings
+  def get_future_bookings
+    render json: @user.bookings.where('date >= ?', DateTime.now).limit(params[:limit]).offset(params[:offset])
+  end
+
+  # GET /bookings/get_past_bookings
+  def get_past_bookings
+    render json: @user.bookings.where('date <= ?', DateTime.now).limit(params[:limit]).offset(params[:offset])
   end
 
   # POST /bookings/validate_booking

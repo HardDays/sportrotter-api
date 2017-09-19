@@ -10,8 +10,14 @@ class Activity < ApplicationRecord
     validates :num_of_bookings, presence: true
 
     def serializable_hash options=nil
-		attrs = {}
-		attrs[:calendar] = calendar_dates
+      attrs = {}
+      attrs[:calendar] = calendar_dates
+
+      cnt = rates.count
+      sum = 0
+		  rates.each{|r| sum += r.rate} if cnt > 0
+		  attrs[:rate] = sum / (cnt == 0 ? 1 : cnt)
+      
    		super.merge(attrs)
-	end
+	  end
 end

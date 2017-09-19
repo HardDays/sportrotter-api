@@ -30,6 +30,8 @@ Rails.application.routes.draw do
 
   # bookings routes
   get 'bookings/get_my_bookings', action: :get_my_bookings, controller: 'bookings'
+  get 'bookings/get_future_bookings', action: :get_future_bookings, controller: 'bookings'
+  get 'bookings/get_past_bookings', action: :get_past_bookings, controller: 'bookings'
   get 'bookings/get_activity_bookings/:id', action: :get_activity_bookings, controller: 'bookings'
   post 'bookings/validate_booking', action: :validate_booking, controller: 'bookings'
   post 'bookings/create', action: :create, controller: 'bookings'
