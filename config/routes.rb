@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   # users routes
-  get 'users/get', action: :get, controller: 'users'
+  get 'users/get/:id', action: :get, controller: 'users'
   get 'users/get_all', action: :get_all, controller: 'users'
   get 'users/get_professionals', action: :get_professionals, controller: 'users'
   get 'users/get_me', action: :get_me, controller: 'users'
