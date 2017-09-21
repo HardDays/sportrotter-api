@@ -28,7 +28,7 @@ class ActivitiesController < ApplicationController
       if @user and (can_view_address(act) or @user.id == act.user_id)
         output.push(act.as_json)
       else
-        output.push(act.as_json(except: ['detailed_address', 'lat', 'lng', 'bearing', 'distance']))
+        output.push(act.as_json(except: ['detailed_address', 'lat', 'lng']))
       end
     end
     return output
@@ -77,7 +77,6 @@ class ActivitiesController < ApplicationController
     else
       render json: @rate.errors, status: :unprocessable_entity
     end
-
   end
 
   # POST /activities/unrate
