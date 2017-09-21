@@ -1,4 +1,7 @@
 class Activity < ApplicationRecord
+    validates :num_of_bookings, presence: true
+    validates :detailed_address, presence: true
+
     belongs_to :image, optional: true
     belongs_to :user, optional: true
     
@@ -7,7 +10,9 @@ class Activity < ApplicationRecord
 
     has_many :rates, dependent: :destroy
 
-    validates :num_of_bookings, presence: true
+    geocoded_by :detailed_address, latitude: :lat, longitude: :lng 
+    reverse_geocoded_by :lat, :lng, address: :detailed_address
+    after_validation :geocode
 
     def isk_fully_booked?
 

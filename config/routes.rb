@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   # activities routes
   get 'activities/get_all', action: :index, controller: 'activities'
   get 'activities/get/:id', action: :show, controller: 'activities'
+  get 'activities/discover', action: :discover, controller: 'activities'
   post 'activities/create', action: :create, controller: 'activities'
   post 'activities/rate', action: :rate, controller: 'activities'
   post 'activities/unrate', action: :unrate, controller: 'activities'

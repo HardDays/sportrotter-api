@@ -6,10 +6,7 @@ class ActivitiesController < ApplicationController
   before_action :check_unrate, only: [:unrate]
 
 
-  # GET /activities/get_all
-  def index
-    @activities = Activity.all
-
+  def filter(params)
     filters = ['user_id']
     filters.each do |filter|
       @activities = @activities.where(filter => params[filter]) if params[filter] != nil
@@ -26,17 +23,39 @@ class ActivitiesController < ApplicationController
     end
     @activities = @activities.limit(params[:limit]).offset(params[:offset])
 
-    @user = AuthorizeController.authorize(request)
     output = []
     @activities.each do |act|
       if @user and (can_view_address(act) or @user.id == act.user_id)
         output.push(act.as_json)
       else
-        output.push(act.as_json(except: 'detailed_address'))
+        output.push(act.as_json(except: ['detailed_address', 'lat', 'lng', 'bearing', 'distance']))
       end
     end
+    return output
+  end
 
-    render json: output
+  # GET /activities/get_all
+  def index
+    @activities = Activity.all
+    @user = AuthorizeController.authorize(request)
+    render json: filter(params)
+  end
+
+  # GET /activities/discover/
+  def discover
+    @user = AuthorizeController.authorize(request)
+    if @user 
+      radius = 10
+      radius = params[:radius] if params[:radius]
+      address = @user.address
+      if not address
+        address = request.location 
+      end
+      @activities = Activity.near(address, radius)
+      render json: filter(params)
+    else
+      render status: :forbidden
+    end
   end
 
   # GET /activities/get/:id
@@ -45,7 +64,7 @@ class ActivitiesController < ApplicationController
     if @user and (can_view_address(@activity) or @user.id == @activity.user_id)
       render json: @activity
     else
-      render json: @activity, except: :detailed_address
+      render json: @activity, except: [:detailed_address, :lat, :lng, :bearing, :distance]
     end
   end
 

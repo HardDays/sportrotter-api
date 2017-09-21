@@ -4,14 +4,14 @@ class UsersController < ApplicationController
   def get
     @user = User.find(params[:id])
 
-    render json: @user, except: :password
+    render json: @user, except: [:password, :address, :lat, :lng, :bearing, :distance]
   end
 
   # GET /users/get_all
   def get_all
     @users = User.all
 
-    render json: @users.limit(params[:limit]).offset(params[:offset]), except: :password
+    render json: @users.limit(params[:limit]).offset(params[:offset]), except: [:password, :address, :lat, :lng, :bearing, :distance]
   end
 
   # GET /users/get_professionals
@@ -35,13 +35,13 @@ class UsersController < ApplicationController
       end
     end
 
-    render json: @users.limit(params[:limit]).offset(params[:offset]).collect{|e| e.user}, except: :password
+    render json: @users.limit(params[:limit]).offset(params[:offset]).collect{|e| e.user},  except: [:password, :lat, :lng, :bearing, :distance]
   end
 
   # GET /users/get_me
   def get_me
     @user = AuthorizeController.authorize(request)
-    render json: @user
+    render json: @user, except: :password
   end
 
   # POST /users/create
@@ -145,15 +145,15 @@ class UsersController < ApplicationController
 private
 
   def user_create_params
-    params.permit(:email, :password, :name, :date_of_birth, :user_type, :gender)
+    params.permit(:email, :password, :name, :date_of_birth, :user_type, :gender, :address)
   end
 
   def user_update_params
-    params.permit(:email, :password, :name, :date_of_birth, :gender)
+    params.permit(:email, :password, :name, :date_of_birth, :gender, :address)
   end
 
   def professional_params
-    params.permit(:address, :phone, :description)
+    params.permit(:phone, :description)
   end
 
   def create_user

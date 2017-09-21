@@ -43,6 +43,7 @@ GEM
     byebug (9.0.6)
     concurrent-ruby (1.0.5)
     erubi (1.6.1)
+    geocoder (1.4.4)
     geokit (1.11.0)
     geokit-rails (2.3.0)
       geokit (~> 1.5)
@@ -92,7 +93,7 @@ GEM
       method_source
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
-    rake (12.0.0)
+    rake (12.1.0)
     sprockets (3.7.1)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -115,6 +116,7 @@ PLATFORMS
 
 DEPENDENCIES
   byebug
+  geocoder
   geokit-rails
   pg (~> 0.18)
   puma (~> 3.7)

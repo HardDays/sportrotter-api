@@ -20,6 +20,11 @@ class User < ApplicationRecord
 
     has_many :rates, dependent: :destroy
 
+    geocoded_by :address, latitude: :lat, longitude: :lng 
+    reverse_geocoded_by :lat, :lng, address: :address
+    after_validation :geocode
+    
+
     def self.get_hash(password) 
         return Digest::SHA256.hexdigest(password)
     end
