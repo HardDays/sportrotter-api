@@ -28,10 +28,6 @@ class User < ApplicationRecord
 		self.password = User.get_hash(self.password)
 	end
 
-	#before_update do
-		#self.password = Digest::SHA256.hexdigest(self.password)
-	#end
-
     def serializable_hash options=nil
 		attrs = {}
 		if user_type == 'professional'

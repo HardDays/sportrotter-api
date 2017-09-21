@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   def get
     @user = User.find(param[:id])
 
-    render json: @user
+    render json: @user, except: :password
   end
 
   # GET /users/get_all
