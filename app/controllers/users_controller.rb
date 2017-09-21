@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   
   # GET /users/get
   def get
-    @user = User.find(param[:id])
+    @user = User.find(params[:id])
 
     render json: @user, except: :password
   end
